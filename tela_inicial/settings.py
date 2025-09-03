@@ -54,7 +54,7 @@ ROOT_URLCONF = 'tela_inicial.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['inicio/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
