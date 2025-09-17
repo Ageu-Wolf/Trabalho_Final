@@ -40,6 +40,8 @@ INSTALLED_APPS = [
 ]
 INSTALLED_APPS += ['django_bootstrap5',]
 
+INSTALLED_APPS += ['inicio','pessoas_fisicas','pessoas_Juridicas']
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
