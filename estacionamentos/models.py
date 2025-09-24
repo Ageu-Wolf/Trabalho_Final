@@ -1,7 +1,5 @@
 from django.db import models
-
 from precos.models import Preco
-from funcionarios.models import Funcionario
 
 
 class Estacionamento(models.Model):
@@ -9,13 +7,18 @@ class Estacionamento(models.Model):
     data_hora_saida = models.DateTimeField(null=True, blank=True)
 
     funcionario = models.ForeignKey(
-        "Funcionario",
+        "funcionarios.Funcionario",
+        on_delete=models.CASCADE,
+        related_name="estacionamentos_funcionario"  # nome único para o reverso
     )
     cliente = models.ForeignKey(
-        "PessoaFisica",
+        "pessoas_fisicas.PessoaFisica",
+        on_delete=models.CASCADE,
+        related_name="estacionamentos_cliente"  # nome único para o reverso
     )
     vaga = models.ForeignKey(
-        "Vaga"
+        "vagas.Vaga",
+        on_delete=models.CASCADE
     )
 
     pernoite = models.BooleanField(default=False)
@@ -24,4 +27,4 @@ class Estacionamento(models.Model):
     preco = models.ForeignKey(Preco, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
-        return
+        return f"Estacionamento {self.id}"

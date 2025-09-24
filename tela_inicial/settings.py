@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 ]
 INSTALLED_APPS += ['django_bootstrap5',]
 
-INSTALLED_APPS += ['inicio','pessoas_fisicas','pessoas_Juridicas']
+INSTALLED_APPS += ['inicio','pessoas_fisicas','pessoas_juridicas','precos', 'carros', 'estacionamentos','Pessoas', 'funcionarios', 'pagamentos', 'vagas', ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -119,7 +119,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [BASE_DIR / 'inicio/static']
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
