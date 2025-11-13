@@ -1,0 +1,118 @@
+{% extends 'inicio.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+{% include "nav.html" %}
+{% block title %}Fechar Conta{% endblock %}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">💵 Fechamento de Conta e Pagamento</h4>
+                </div>
+                <div class="card-body">
+
+                    <h5 class="card-title text-center mb-4">Registro: **{{ registro.carro.placa }}** na Vaga **{{ registro.vaga.numero }}**</h5>
+
+                    <hr>
+
+                    <div class="row mb-4 bg-light p-3 rounded">
+                        <div class="col-sm-6 border-end">
+                            <p class="mb-1 text-muted">Valor Base (sem taxas/descontos):</p>
+                            <p class="h4 text-success" id="valor-base" data-valor-base="{{ valor_total|floatformat:2 }}">
+                                R$ {{ valor_total|floatformat:2 }}
+                            </p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="mb-1 text-muted">**Valor Final a Pagar:**</p>
+                            <p class="h3 text-danger" id="valor-final">
+                                R$ 0.00
+                            </p>
+                        </div>
+                    </div>
+
+                    <form method="post" action="{% url 'confirmacao_pagamento' pk=registro.pk %}">
+                        {% csrf_token %}
+
+                        <h5 class="mt-4 mb-3">Escolha o Método de Pagamento:</h5>
+
+                        {% bootstrap_form form %}
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-success btn-lg" id="btn-pagamento" disabled>
+                                Receber Pagamento e Liberar Vaga
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // === CÓDIGO JAVASCRIPT PARA ATUALIZAÇÃO EM TEMPO REAL ===
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Elementos principais e constantes
+        const valorBaseElement = document.getElementById('valor-base');
+        const valorFinalElement = document.getElementById('valor-final');
+        const botaoPagamento = document.getElementById('btn-pagamento');
+
+        // Obtém o valor base real como float
+        const valorBase = parseFloat(valorBaseElement.dataset.valorBase);
+
+        // Seleciona todos os botões de rádio do formulário de pagamento
+        // Assumindo que o nome do campo é 'metodo_pagamento' (conforme seu forms.py)
+        const metodosRadio = document.querySelectorAll('input[name="metodo_pagamento"]');
+
+        // 2. Função de Cálculo
+        function calcularValorFinal(metodo) {
+            let valorFinal = valorBase;
+
+            if (metodo === 'CREDITO') {
+                // Aplica 5% adicionais
+                valorFinal = valorBase * 1.05;
+                valorFinalElement.classList.remove('text-success');
+                valorFinalElement.classList.add('text-danger');
+            } else if (metodo === 'PIX') {
+                // Aplica 5% de desconto
+                valorFinal = valorBase * 0.95;
+                valorFinalElement.classList.remove('text-danger');
+                valorFinalElement.classList.add('text-success');
+            } else { // Dinheiro/Débito
+                valorFinal = valorBase;
+                valorFinalElement.classList.remove('text-danger');
+                valorFinalElement.classList.add('text-success');
+            }
+
+            // Garante que o valor seja formatado para 2 casas decimais
+            return valorFinal.toFixed(2);
+        }
+
+        // 3. Função do Event Listener
+        function handleMetodoChange(event) {
+            const metodoSelecionado = event.target.value;
+            const novoValor = calcularValorFinal(metodoSelecionado);
+
+            // Atualiza o texto na tela
+            valorFinalElement.textContent = 'R$ ' + novoValor;
+
+            // Ativa o botão de pagamento
+            botaoPagamento.disabled = false;
+        }
+
+        // 4. Atribui Event Listeners
+        metodosRadio.forEach(radio => {
+            radio.addEventListener('change', handleMetodoChange);
+        });
+
+        // 5. Estado Inicial
+        // Define um valor inicial (R$ 0.00 ou força a seleção de uma opção)
+        valorFinalElement.textContent = 'R$ 0.00';
+    });
+</script>
+
+{% endblock %}

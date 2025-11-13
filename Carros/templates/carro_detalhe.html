@@ -1,0 +1,82 @@
+{% extends 'inicio.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+{% include "nav.html" %}
+
+<div class="container mt-5 mb-5">
+    
+    <h2 class="text-center mb-4">Detalhes do Veículo e Proprietários</h2>
+    <hr>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">🚗 Informações do Carro</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>Placa:</strong> <span class="badge bg-dark">{{ carro.placa }}</span>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Modelo:</strong> {{ carro.modelo }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Cor:</strong> {{ carro.cor }}
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer text-end">
+                    <a href="{% url 'carro_editar' pk=carro.placa %}" class="btn btn-warning btn-sm">
+                        Editar Carro
+                    </a>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">👤 Clientes/Motoristas Associados</h4>
+                </div>
+                <div class="card-body">
+                    {% if carro.clientes.all %}
+                        <ul class="list-group">
+                            {% for cliente in carro.clientes.all %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ cliente.nome }}</strong>
+                                        <br>
+                                        <small class="text-muted">
+                                            {{ cliente.get_tipo_display }} | E-mail: {{ cliente.email }}
+                                            {% if cliente.cpf_cnpj %}
+                                            | 
+                                            {% if cliente.tipo == 'F' %}CPF{% else %}CNPJ{% endif %}: 
+                                            {{ cliente.cpf_cnpj }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    {# 💡 Opcional: Link para a página de detalhes do Cliente #}
+                                    {# Assumindo que existe uma URL chamada 'cliente_detalhe' que recebe o PK (ID) do Cliente #}
+                                    {# <a href="{% url 'cliente_detalhe' pk=cliente.pk %}" class="btn btn-sm btn-outline-info">Ver Detalhes</a> #}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-warning mb-0" role="alert">
+                            Nenhum cliente está associado a este veículo.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <a href="{% url 'carros' %}" class="btn btn-secondary btn-lg">
+                    ← Voltar para a Lista de Carros
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

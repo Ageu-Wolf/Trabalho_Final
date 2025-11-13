@@ -1,0 +1,15 @@
+{% extends 'inicio.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+{% include "nav.html" %}
+<div class="container mt-4">
+    <h2>Apagar Carro</h2>
+    <p>Tem certeza que deseja apagar o carro <strong>{{ object.modelo }} - {{ object.placa }}</strong>?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Apagar</button>
+        <a href="{% url 'carros' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
