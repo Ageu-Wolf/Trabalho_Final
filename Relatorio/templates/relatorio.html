@@ -1,0 +1,51 @@
+{% extends 'inicio.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+{% include "nav.html" %}
+    <h1>Lista de Relatórios de Estacionamento</h1>
+
+    {% if relatorios %}
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Cliente</th>
+                    <th>Carro (Marca)</th>
+                    <th>Placa</th>
+                    <th>Entrada</th>
+                    <th>Saída</th>
+                    <th>Duração</th>
+                    <th>Total Pago</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in relatorios %}
+                <tr>
+                    <td>{{ registro.cliente.nome|default:"Avulso" }}</td>
+
+                    <td>{{ registro.carro.modelo }}</td>
+
+                    <td>{{ registro.carro.placa }}</td>
+
+                    <td>{{ registro.data_hora_entrada|date:"d/m/Y H:i" }}</td>
+
+                    <td>{{ registro.data_hora_saida|date:"d/m/Y H:i" }}</td>
+
+                    <td>{{ registro.duracao_formatada }}</td>
+
+                    <td>R$ {{ registro.pagamento|floatformat:2 }}</td>
+
+                    <td>
+                        <span class="badge bg-success">Pago/Finalizado</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            Nenhum registro de estacionamento finalizado encontrado.
+        </div>
+    {% endif %}
+
+{% endblock %}

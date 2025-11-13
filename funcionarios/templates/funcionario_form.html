@@ -1,0 +1,54 @@
+{% extends 'inicio.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+    {% if object %}
+        Editar Funcionário: {{ object.nome }}
+    {% else %}
+        Novo Funcionário
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+{% include "nav.html" %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg p-4">
+                <h2 class="card-title text-center mb-4">
+                    {% if object %}
+                        Editar Dados de {{ object.nome }}
+                    {% else %}
+                        Cadastrar Novo Funcionário
+                    {% endif %}
+                </h2>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {# Exibe todos os campos do formulário FuncionarioModelForm #}
+                    {# O enctype="multipart/form-data" é ESSENCIAL para o upload de fotos! #}
+                    {% bootstrap_form form %}
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save"></i>
+                            {% if object %}
+                                Salvar Alterações
+                            {% else %}
+                                Cadastrar Funcionário
+                            {% endif %}
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-3 text-center">
+                    <a href="{% url 'funcionarios' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Voltar para a Lista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'inicio.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+{% include "nav.html" %}
+
+{% block title %}Confirmar Exclusão{% endblock %}
+
+<div class="container my-5">
+    <div class="card shadow-lg mx-auto" style="max-width: 500px;">
+        <div class="card-header bg-danger text-white text-center">
+            <h3 class="mb-0"><i class="bi bi-exclamation-triangle-fill"></i> Confirmação de Exclusão</h3>
+        </div>
+        <div class="card-body p-4">
+            <p class="lead text-center">Você tem certeza que deseja excluir o funcionário:</p>
+            <h4 class="text-center text-danger">{{ object.nome }}?</h4>
+            <p class="text-center text-muted">Esta ação é irreversível.</p>
+
+            <form method="POST" class="mt-4">
+                {% csrf_token %}
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-danger btn-lg">
+                        <i class="bi bi-trash-fill"></i> Sim, Excluir Definitivamente
+                    </button>
+                    <a href="{% url 'funcionarios' %}" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-x-circle"></i> Não, Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

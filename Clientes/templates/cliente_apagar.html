@@ -1,0 +1,44 @@
+{% extends 'inicio.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+{% include "nav.html" %}
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm mt-5">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">⚠️ Confirmação de Exclusão</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead">
+                        Tem certeza que deseja **APAGAR** o cliente abaixo e todos os seus dados relacionados (incluindo carros)?
+                    </p>
+
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Cliente:</strong> {{ object.nome }}<br>
+                        <strong>Tipo:</strong> {{ object.get_tipo_display }}<br>
+                        {% if object.tipo == 'F' %}
+                            {# O campo 'tipo' usa 'F' para Pessoa Física e 'J' para Pessoa Jurídica #}
+                            <strong>Documento (CPF):</strong> {{ object.cpf_cnpj }}
+                        {% else %}
+                            <strong>Documento (CNPJ):</strong> {{ object.cpf_cnpj }}
+                        {% endif %}
+                    </div>
+
+                    <form method="post" action="{% url 'cliente_apagar' pk=object.pk %}">
+                        {% csrf_token %}
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-danger btn-lg me-md-2">
+                                Sim, APAGAR Definitivamente
+                            </button>
+                            
+                            <a href="{% url 'clientes' %}" class="btn btn-secondary btn-lg">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

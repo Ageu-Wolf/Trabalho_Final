@@ -1,0 +1,45 @@
+{% extends 'inicio.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+{% include "nav.html" %}
+{% block title %}Registros de Estacionamento{% endblock %}
+ <h1>Registros de Estacionamento</h1>
+    <a href="{% url 'estacionamento_novo' %}" class="btn btn-primary mb-3">
+        Novo Registro de Estacionamento
+    </a>
+
+    {% if registros %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Vaga</th>
+                    <th>Entrada</th>
+                    <th>Período</th>
+                    <th>Estado</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in registros %}
+                <tr>
+                    <td>{{ registro.pk }}</td>
+                    <td>{{ registro.cliente.nome_completo }}</td> {# Ajuste o campo do cliente conforme seu modelo #}
+                    <td>{{ registro.vaga.numero }}</td> {# Ajuste o campo da vaga conforme seu modelo #}
+                    <td>{{ registro.data_hora_entrada }}</td> 
+                    <td>{{ registro.get_periodo_display }}</td> 
+                    <td>{{ registro.estado }}</td>
+                    <td>
+                        <a href="{% url 'estacionamento_detalhe' registro.pk %}" class="btn btn-sm btn-info">Ver</a>
+                        <a href="{% url 'estacionamento_editar' registro.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'estacionamento_excluir' registro.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum registro de estacionamento encontrado.</p>
+    {% endif %}
+{% endblock %}

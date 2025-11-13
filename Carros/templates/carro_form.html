@@ -1,0 +1,53 @@
+{% extends 'inicio.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+{% include "nav.html" %}
+    <div class="container mt-5 mb-5">
+
+        <h2 class="text-center mb-4">
+            {% if object %}Editar Carro{% else %}Adicionar Novo Carro{% endif %}
+        </h2>
+
+        <hr>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% bootstrap_form_errors form type='all' %}
+
+                    {# 1. DETALHES DO VEÍCULO #}
+                    <h5 class="mt-4 mb-3 text-primary">Detalhes do Veículo</h5>
+
+                    {% bootstrap_field form.placa %}
+                    {% bootstrap_field form.modelo %}
+                    {% bootstrap_field form.cor %}
+
+                    {# 2. VINCULAÇÃO DE CLIENTES #}
+                    <h5 class="mt-5 mb-3 text-primary">Vincular Cliente(s)</h5>
+
+                    {# 💡 DICA: Para melhorar a usabilidade de ManyToManyField, você deve usar widgets #}
+                    {# como o 'select2' ou 'FilterSelectMultiple' do Admin. #}
+                    {# O SelectMultiple padrão do Django será renderizado aqui: #}
+                    {% bootstrap_field form.clientes %}
+
+                    <div class="alert alert-info small mt-2" role="alert">
+                        Para selecionar múltiplos clientes (proprietários/usuários), use a tecla **CTRL** (Windows) ou **Command** (Mac) enquanto clica nos nomes.
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            ✅ Cadastrar Carro
+                        </button>
+
+                        <a href="{% url 'carros' %}" class="btn btn-secondary btn-lg">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

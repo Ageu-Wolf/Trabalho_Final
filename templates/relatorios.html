@@ -1,0 +1,264 @@
+{% extends 'inicio.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+{% include "nav.html" %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Smart Parking - Relatório do Dia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        /* Estilos da Nav Bar */
+        .navbar-brand-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        /* Estilos da Logo I/O ParKING */
+        .io-logo-icon { font-size: 2rem; color: #0d6efd; }
+        .io-logo-text {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            line-height: 1;
+            margin-left: 8px;
+        }
+        /* Estilo para indicadores */
+        .indicator-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+           
+                        <a class="navbar-brand navbar-brand-center" href="funcionarios.html">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-gear-wide-connected io-logo-icon"></i>
+                    <span class="io-logo-text">
+                        <span class="text-primary">I/O</span>
+                        <span class="text-secondary" style="font-weight: 300;">ParKING</span>
+                    </span>
+                </div>
+            </a>
+
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                   
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-people-fill me-1"></i> Clientes
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="clientes_lista.html"><i class="bi bi-list-task me-1"></i> Ver Todos</a></li>
+                            <li><a class="dropdown-item" href="cadastro_cliente.html"><i class="bi bi-person-plus-fill me-1"></i> Cadastrar Novo</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="agendamentos.html">
+                            <i class="bi bi-calendar-check-fill me-1"></i> Agendamentos
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="estacionamento.html">
+                            <i class="bi bi-car-front-fill me-1"></i> Estacionamento
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="pagamentos.html">
+                            <i class="bi bi-currency-dollar me-1"></i> Pagamentos
+                        </a>
+                    </li>
+                   
+                                        <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="relatorio.html">
+                            <i class="bi bi-clipboard-data-fill me-1"></i> Relatório do Dia
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://via.placeholder.com/40" alt="Foto do Funcionário" class="profile-picture me-2">
+                            <span class="d-none d-lg-inline">João da Silva (Mat. 123)</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Ver Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="login.html">
+                                <i class="bi bi-box-arrow-right"></i> Deslogar
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4"><i class="bi bi-journal-check me-2"></i> Relatório de Operações</h1>
+                <p class="lead text-muted">Resumo do dia: <span class="text-primary fw-bold" id="dataRelatorio">26/08/2025</span> (Turno Atual)</p>
+            </div>
+        </div>
+
+        <hr class="my-4">
+
+        <h2 class="text-secondary mb-4">Indicadores Financeiros</h2>
+        <div class="row g-4 mb-5">
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow-sm h-100 border-success">
+                    <div class="card-body">
+                        <i class="bi bi-currency-dollar text-success float-end" style="font-size: 2rem;"></i>
+                        <h5 class="card-title text-success">Faturamento Bruto</h5>
+                        <p class="indicator-value">R$ 1.540,00</p>
+                        <p class="card-text text-muted small">Total de pagamentos recebidos.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow-sm h-100 border-warning">
+                    <div class="card-body">
+                        <i class="bi bi-percent text-warning float-end" style="font-size: 2rem;"></i>
+                        <h5 class="card-title text-warning">Total de Descontos</h5>
+                        <p class="indicator-value">R$ 115,00</p>
+                        <p class="card-text text-muted small">Descontos aplicados (PIX, afiliados, etc.).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-12">
+                <div class="card shadow-sm h-100 border-primary">
+                    <div class="card-body">
+                        <i class="bi bi-wallet2 text-primary float-end" style="font-size: 2rem;"></i>
+                        <h5 class="card-title text-primary">Faturamento Líquido</h5>
+                        <p class="indicator-value">R$ 1.425,00</p>
+                        <p class="card-text text-muted small">Receita efetiva após descontos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-secondary mb-4">Fluxo e Ocupação</h2>
+        <div class="row g-4 mb-5">
+
+            <div class="col-lg-3 col-sm-6">
+                <div class="card shadow-sm h-100 border-success">
+                    <div class="card-body text-center">
+                        <i class="bi bi-box-arrow-in-right text-success" style="font-size: 1.5rem;"></i>
+                        <h5 class="card-title mt-2">Entradas</h5>
+                        <p class="indicator-value text-success">35</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-6">
+                <div class="card shadow-sm h-100 border-danger">
+                    <div class="card-body text-center">
+                        <i class="bi bi-box-arrow-right text-danger" style="font-size: 1.5rem;"></i>
+                        <h5 class="card-title mt-2">Saídas</h5>
+                        <p class="indicator-value text-danger">28</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-6">
+                <div class="card shadow-sm h-100 border-secondary">
+                    <div class="card-body text-center">
+                        <i class="bi bi-receipt text-secondary" style="font-size: 1.5rem;"></i>
+                        <h5 class="card-title mt-2">Ticket Médio</h5>
+                        <p class="indicator-value text-secondary">R$ 44,14</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-6">
+                <div class="card shadow-sm h-100 border-info">
+                    <div class="card-body text-center">
+                        <i class="bi bi-graph-up-arrow text-info" style="font-size: 1.5rem;"></i>
+                        <h5 class="card-title mt-2">Ocupação Atual</h5>
+                        <p class="indicator-value text-info">75%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-secondary mb-4">Detalhe dos Pagamentos por Tipo</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Tipo de Pagamento</th>
+                        <th scope="col">Transações</th>
+                        <th scope="col">Valor Total (R$)</th>
+                        <th scope="col">Percentual do Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>PIX (com 10% desc.)</td>
+                        <td>15</td>
+                        <td class="text-success">R$ 810,00</td>
+                        <td>57%</td>
+                    </tr>
+                    <tr>
+                        <td>Cartão de Crédito</td>
+                        <td>8</td>
+                        <td class="text-success">R$ 450,00</td>
+                        <td>32%</td>
+                    </tr>
+                    <tr>
+                        <td>Dinheiro</td>
+                        <td>5</td>
+                        <td class="text-success">R$ 165,00</td>
+                        <td>11%</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="table-info">
+                        <th>Total Geral</th>
+                        <th>28</th>
+                        <th class="text-primary">R$ 1.425,00</th>
+                        <th>100%</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script>
+        // Define a data atual no cabeçalho do relatório
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            document.getElementById('dataRelatorio').textContent = `${day}/${month}/${year}`;
+        });
+    </script>
+</body>
+</html>

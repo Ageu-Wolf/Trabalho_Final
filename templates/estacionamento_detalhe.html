@@ -1,0 +1,23 @@
+{% extends 'inicio.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+{% include "nav.html" %}
+{% block title %}Detalhes do Registro #{{ registro.pk }}{% endblock %}
+ <h1>Detalhes do Registro de Estacionamento #{{ registro.pk }}</h1>
+    
+    <div class="card p-4">
+        <p><strong>Cliente:</strong> {{ registro.cliente }}</p>
+        <p><strong>Vaga:</strong> {{ registro.vaga.numero }}</p>
+        <p><strong>Funcionário:</strong> {{ registro.funcionario }}</p>
+        <p><strong>Entrada:</strong> {{ registro.data_hora_entrada }}</p>
+        <p><strong>Saída:</strong> {{ registro.data_hora_saida|default:"Ainda não saiu" }}</p>
+        <p><strong>Período:</strong> {{ registro.get_periodo_display }}</p>
+        <p><strong>Estado:</strong> {{ registro.estado }}</p>
+        <p><strong>Pagamento:</strong> R$ {{ registro.pagamento|default:"0.00" }}</p>
+        <p><strong>Relatório:</strong> {{ registro.relatorio|default:"Nenhum relatório" }}</p>
+    </div>
+
+    <a href="{% url 'estacionamento_editar' registro.pk %}" class="btn btn-warning mt-3">Editar</a>
+    <a href="{% url 'estacionamento_lista' %}" class="btn btn-secondary mt-3">Voltar à Lista</a>
+
+{% endblock %}
