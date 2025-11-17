@@ -1,20 +1,13 @@
+from django.db.models.functions import Upper
 from django.db import models
-
-from django.db import models
-from stdimage import StdImageField
-
-from pessoas_fisicas.models import PessoaFisica
+from Clientes.models import Pessoa
 
 
-class Funcionario(PessoaFisica):
-    foto = StdImageField('foto',upload_to='funcionarios',delete_orphans=True,null=True,blank=True)
-    salario = models.DecimalField(max_digits=10, decimal_places=2)
-    data_admissao = models.DateField(null=True, blank=True)
+class Funcionario(Pessoa):
+    salario = models.DecimalField('Salário', max_digits=8, decimal_places=2, help_text='Salário base do funcionário')
+    foto = models.ImageField('Foto', null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Funcionario'
-        verbose_name_plural = 'Funcionarios'
-
-    def __str__(self):
-        return self.nome
-
+        verbose_name = 'Funcionário'
+        verbose_name_plural = 'Funcionários'
+        ordering = [Upper('nome')]
