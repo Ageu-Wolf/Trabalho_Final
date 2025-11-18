@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static # Importar isto
 from django.conf import settings
+from django.contrib.auth import views as auth_views
 
 # tela_inicial/urls.py (Ou o arquivo urls.py na pasta do seu projeto principal)
 
@@ -29,6 +30,6 @@ urlpatterns = [
     path('funcionarios/', include('funcionarios.urls')),
     path('Vagas/', include('Vagas.urls')),
     path('relatorios/', include('Relatorio.urls')),
-] # Note o 'relatorios']
+]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

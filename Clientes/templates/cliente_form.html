@@ -11,7 +11,6 @@
                 {% if object %}Editar Cliente{% else %}Cadastro de Cliente{% endif %}
             </h3>
 
-            {# O formulário precisa do método POST e do enctype para lidar com o upload de arquivos (foto) #}
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
 
@@ -26,19 +25,10 @@
                 </div>
                 {% bootstrap_field form.tipo %}
 
-                {# Campo CPF/CNPJ #}
-                {# Sem JavaScript, este campo fica visível o tempo todo, mas o rótulo é genérico. #}
-                {# O help_text é essencial para guiar o usuário na ausência de JS. #}
+                {# Campo CPF/CNPJ (REESTRUTURADO) #}
                 <div class="form-group mb-3">
-                    <label for="{{ form.cpf_cnpj.id_for_label }}" class="form-label">CPF/CNPJ</label>
-
-                    {# Renderiza o campo de input #}
+                    <label id="cpf_cnpj_label" class="form-label">CPF/CNPJ</label>
                     {% bootstrap_field form.cpf_cnpj show_label=False %}
-
-                    {# Adiciona uma dica clara, já que o rótulo não muda #}
-                    <div class="form-text">
-                        Informe o **CPF** se for Pessoa Física, ou o **CNPJ** se for Pessoa Jurídica.
-                    </div>
                 </div>
 
                 {# Campo de Foto #}

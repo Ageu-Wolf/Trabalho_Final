@@ -5,8 +5,6 @@ from Carros.models import Carro
 from Clientes.models import Cliente
 from funcionarios.models import Funcionario
 import math
-from Relatorio.models import Relatorio
-
 
 class Vaga(models.Model):
 
@@ -135,6 +133,15 @@ class Estacionamento(models.Model):
         verbose_name = "Registro de Estacionamento"
         verbose_name_plural = "Registros de Estacionamento"
 
+        permissions = (
+            # Permissão para registrar uma nova entrada
+            ('registrar_entrada', 'Pode registrar a entrada de um veículo no estacionamento'),
+            # Permissão para calcular e finalizar a saída/pagamento
+            ('finalizar_saida', 'Pode calcular e finalizar a saída e pagamento do veículo'),
+            # Permissão para visualizar a lista de vagas e registros ativos
+            ('visualizar_vagas', 'Pode visualizar o mapa de vagas e registros ativos'),
+        )
+
     def __str__(self):
         return f"{self.carro.placa} na Vaga {self.vaga.numero} | {self.estado}"
 
@@ -158,43 +165,47 @@ class Estacionamento(models.Model):
         # Retorna o valor final (já arredondado para duas casas)
         return round(valor_final, 2)
 
-    def calcular_valor_total(self, preco_por_hora=5.00):
-        """
-        Calcula o tempo de permanência e o valor base (sem taxa/desconto).
-        """
+    def calcular_valor_total(self, preco_por_hora=5.00, preco_diaria=50.00):
+
         data_saida = timezone.now()
         duracao_timedelta = data_saida - self.data_hora_entrada
 
-        # 1. Calcula a duração formatada (para display)
+        horas_float = duracao_timedelta.total_seconds() / 3600
+        valor_total_base = 0.00
+
         total_segundos = int(duracao_timedelta.total_seconds())
         horas = total_segundos // 3600
         minutos = (total_segundos % 3600) // 60
         duracao_formatada = f"{horas}h {minutos}m"
 
-        # 2. Calcula o valor base (arredondando a hora para cima)
-        horas_float = duracao_timedelta.total_seconds() / 3600
-        horas_cobradas = math.ceil(horas_float)
-        valor_total_base = round(horas_cobradas * preco_por_hora, 2)
+        periodo = self.periodo_estimado
 
-        # Retorna o data_saida, o timedelta e o valor base
+        if periodo == 'MENSAL':
+            valor_total_base = 0.00
+
+        elif periodo == 'DIARIA':
+
+            valor_total_base = preco_diaria
+
+        elif periodo == 'HORA':
+
+            horas_cobradas = math.ceil(horas_float)
+
+            valor_total_base = horas_cobradas * preco_por_hora
+
+        valor_total_base = round(valor_total_base, 2)
+
         return data_saida, duracao_timedelta, valor_total_base
 
     def finalizar_saida_e_liberar_vaga(self, data_saida, duracao_timedelta, valor_final,relatorio_instance):
-        """
-        FINALIZA o registro e LIBERA a vaga.
-        """
-        # 1. Atualiza o registro de estacionamento
         self.data_hora_saida = data_saida
-        self.tempo_permanencia = duracao_timedelta  # Salva o objeto timedelta
+        self.tempo_permanencia = duracao_timedelta
         self.pagamento = valor_final
-        self.estado = 'CONCLUIDO'  # Ou 'FINALIZADO' dependendo do seu choice
+        self.estado = 'CONCLUIDO'
         self.relatorio_final = relatorio_instance
 
-        # O campo 'metodo_pagamento_final' deve ter sido setado na View antes de chamar este método!
-
-        # 2. Libera a vaga
         vaga = self.vaga
-        vaga.status = 'L'  # L = Livre
+        vaga.status = 'L'
         vaga.carro_estacionado = None
         vaga.save()
 

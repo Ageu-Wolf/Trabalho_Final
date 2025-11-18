@@ -18,6 +18,12 @@ class Carro(models.Model):
         verbose_name = 'Carro'
         verbose_name_plural = 'Carros'
         ordering = [Upper('modelo'), 'placa']
+        permissions = (
+            ('visualizar_carro', 'Pode visualizar a lista e detalhes de carros'),
+            ('cadastrar_carro', 'Pode adicionar novos carros'),
+            ('editar_carro', 'Pode editar carros existentes'),
+            ('deletar_carro', 'Pode excluir carros'),
+        )
 
     def __str__(self):
         return f"{self.modelo} - {self.placa}"
