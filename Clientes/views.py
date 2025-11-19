@@ -69,5 +69,4 @@ class ClienteDeleteView(LoginRequiredMixin,SuccessMessageMixin, DeleteView):
                 f"Não foi possível excluir o cliente. Existem registros de estacionamento vinculados a ele ({self.object.pk}). Remova ou edite os registros primeiro."
             )
 
-            # ✅ CORREÇÃO: Use o atalho 'redirect' para retornar um objeto HttpResponseRedirect
             return redirect(self.success_url)

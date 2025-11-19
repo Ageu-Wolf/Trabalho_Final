@@ -3,7 +3,6 @@ from django.utils import timezone
 import uuid 
 
 class Relatorio(models.Model):
-    # Tipos de Pagamento
     TIPO_CHOICES = [
         ('PIX', 'Pix'),
         ('CREDITO', 'Cartão de Crédito'),

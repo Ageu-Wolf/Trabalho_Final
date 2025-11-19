@@ -7,14 +7,12 @@
     <div class="card-body">
         <div class="row">
             <h3 class="text-center">
-                {# Determina o título baseado na existência do objeto (Edição vs. Cadastro) #}
                 {% if object %}Editar Cliente{% else %}Cadastro de Cliente{% endif %}
             </h3>
 
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                {# Campos Pessoais (Nome, Telefone, Email) #}
                 {% bootstrap_field form.nome %}
                 {% bootstrap_field form.fone %}
                 {% bootstrap_field form.email %}
@@ -25,16 +23,13 @@
                 </div>
                 {% bootstrap_field form.tipo %}
 
-                {# Campo CPF/CNPJ (REESTRUTURADO) #}
                 <div class="form-group mb-3">
                     <label id="cpf_cnpj_label" class="form-label">CPF/CNPJ</label>
                     {% bootstrap_field form.cpf_cnpj show_label=False %}
                 </div>
 
-                {# Campo de Foto #}
                 {% bootstrap_field form.foto %}
 
-                {# Exibição da Foto Atual (apenas na Edição) #}
                 {% if object.foto %}
                 <div class="col-12 text-center mb-3">
                     <p class="text-muted">Foto Atual:</p>

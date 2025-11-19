@@ -43,7 +43,7 @@ class Vaga(models.Model):
 
 class Estacionamento(models.Model):
     relatorio_final = models.OneToOneField(
-        'Relatorio.Relatorio',  # <-- Nova referência de string
+        'Relatorio.Relatorio',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -134,11 +134,8 @@ class Estacionamento(models.Model):
         verbose_name_plural = "Registros de Estacionamento"
 
         permissions = (
-            # Permissão para registrar uma nova entrada
             ('registrar_entrada', 'Pode registrar a entrada de um veículo no estacionamento'),
-            # Permissão para calcular e finalizar a saída/pagamento
             ('finalizar_saida', 'Pode calcular e finalizar a saída e pagamento do veículo'),
-            # Permissão para visualizar a lista de vagas e registros ativos
             ('visualizar_vagas', 'Pode visualizar o mapa de vagas e registros ativos'),
         )
 
@@ -156,13 +153,10 @@ class Estacionamento(models.Model):
         desconto_pix = 0.05  # 5%
 
         if metodo == 'CREDITO':
-            # Aplica taxa de 5%
             valor_final = valor_base * (1 + taxa_credito)
         elif metodo == 'PIX':
-            # Aplica desconto de 5%
             valor_final = valor_base * (1 - desconto_pix)
 
-        # Retorna o valor final (já arredondado para duas casas)
         return round(valor_final, 2)
 
     def calcular_valor_total(self, preco_por_hora=5.00, preco_diaria=50.00):

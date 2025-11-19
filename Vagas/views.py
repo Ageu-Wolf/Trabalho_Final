@@ -9,7 +9,7 @@ from Relatorio.models import Relatorio
 from .forms import EstacionamentoEntradaForm, PagamentoForm
 from .models import Vaga, Estacionamento
 
-
+TEMPO_TOLERANCIA_SEGUNDOS = 5 * 60
 class VagasView(LoginRequiredMixin,TemplateView):
     template_name = 'vagas.html'
     permission_required = 'estacionamento.visualizar_vagas'
@@ -74,16 +74,19 @@ class CalculoPagamentoView(LoginRequiredMixin,DetailView):
 
         data_saida, duracao, valor_total_base = registro.calcular_valor_total()
 
-        context['form'] = PagamentoForm()
+        if duracao.total_seconds() < TEMPO_TOLERANCIA_SEGUNDOS:
+            valor_final_display = 0.00
+            messages.info(self.request, "Isento de pagamento: permanência inferior a 15 minutos.")
+        else:
+            valor_final_display = valor_total_base
 
+        context['form'] = PagamentoForm()
         context['data_saida_estimada'] = data_saida
         context['tempo_permanencia'] = duracao
-        context['valor_total'] = valor_total_base
-
+        context['valor_total'] = valor_final_display
         return context
 
-
-class ConfirmacaoPagamentoView(LoginRequiredMixin,View):
+class ConfirmacaoPagamentoView(LoginRequiredMixin, View):
     success_url = reverse_lazy('Vagas')
     permission_required = 'estacionamento.finalizar_saida'
     permission_denied_message = 'Você não tem permissão para confirmar o Pagamento/Saída.'
@@ -92,41 +95,42 @@ class ConfirmacaoPagamentoView(LoginRequiredMixin,View):
         registro = get_object_or_404(Estacionamento, pk=pk, estado='ATIVO')
         form = PagamentoForm(request.POST)
 
-        if form.is_valid():
-            metodo_selecionado = form.cleaned_data['metodo_pagamento']
+        try:
+            data_saida, duracao, valor_total_base = registro.calcular_valor_total()
 
-            try:
-                data_saida, duracao, valor_total_base = registro.calcular_valor_total()
+            if duracao.total_seconds() < TEMPO_TOLERANCIA_SEGUNDOS:
+                valor_total_final = 0.00
+                metodo_selecionado = "Isento (15 min)"
+
+            else:
+                if not form.is_valid():
+                    messages.error(request, "Método de pagamento não selecionado. Por favor, tente novamente.")
+                    return redirect('calculo_pagamento', pk=pk)
+
+                metodo_selecionado = form.cleaned_data['metodo_pagamento']
                 valor_total_final = registro.aplicar_regra_pagamento(valor_total_base, metodo_selecionado)
 
-                with transaction.atomic():
+            with transaction.atomic():
+                novo_relatorio = Relatorio.objects.create(
+                    tipo=metodo_selecionado,
+                    valor=valor_total_final,
+                )
 
-                    novo_relatorio = Relatorio.objects.create(
-                        tipo=metodo_selecionado,
-                        valor=valor_total_final,
-                    )
+                registro.metodo_pagamento_final = metodo_selecionado
+                registro.save(update_fields=['metodo_pagamento_final'])
 
-                    # 2b. Salva o método de pagamento usado ANTES de finalizar
-                    # Note: O campo 'pagamento' no Estacionamento será atualizado no finalize_saida
-                    registro.metodo_pagamento_final = metodo_selecionado
-                    registro.save(update_fields=['metodo_pagamento_final'])
+                registro.finalizar_saida_e_liberar_vaga(
+                    data_saida,
+                    duracao,
+                    valor_total_final,
+                    novo_relatorio
+                )
 
-                    registro.finalizar_saida_e_liberar_vaga(
-                        data_saida,
-                        duracao,
-                        valor_total_final,
-                        novo_relatorio
-                    )
+            messages.success(request,
+                             f"Saída registrada. Pagamento final: R$ {valor_total_final:.2f} via {metodo_selecionado} e vaga liberada para {registro.carro.placa}.")
 
-                messages.success(request,
-                                 f"Pagamento de R$ {valor_total_final:.2f} via {metodo_selecionado} registrado (Relatório ID: {novo_relatorio.id}) e vaga liberada para {registro.carro.placa}.")
-
-            except Exception as e:
-                messages.error(request, f"Erro ao finalizar pagamento: {e}")
-                return redirect('calculo_pagamento', pk=pk)  # Volta para a tela de cálculo em caso de falha
-
-        else:
-            messages.error(request, "Método de pagamento não selecionado. Por favor, tente novamente.")
+        except Exception as e:
+            messages.error(request, f"Erro ao finalizar pagamento: {e}")
             return redirect('calculo_pagamento', pk=pk)
 
         return redirect(self.success_url)

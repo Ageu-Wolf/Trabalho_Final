@@ -1,6 +1,8 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
+from django.db.models import RestrictedError
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, UpdateView, DeleteView
 from django.contrib import messages
@@ -56,6 +58,21 @@ class CarroDeleteView(LoginRequiredMixin,SuccessMessageMixin, DeleteView):
     success_message = 'Carro deletado com sucesso!'
     permission_required = 'carros.deletar_carro'
     permission_denied_message = 'Você não tem permissão para deletar carros.'
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        try:
+            self.object.delete()
+
+            return super().post(request, *args, **kwargs)
+
+        except RestrictedError:
+
+            messages.error(
+                request,
+                f"Não foi possível excluir o carro (Placa: {self.object.placa}). Existem registros de estacionamento vinculados a ele. Remova ou edite esses registros primeiro."
+            )
+            return redirect(self.success_url)
 
 class CarroDetailView(LoginRequiredMixin,DetailView):
     model = Carro
@@ -63,3 +80,4 @@ class CarroDetailView(LoginRequiredMixin,DetailView):
     context_object_name = 'carro'
     permission_required = 'carros.visualizar_carro'
     permission_denied_message = 'Você não tem permissão para ver detalhes de carros.'
+

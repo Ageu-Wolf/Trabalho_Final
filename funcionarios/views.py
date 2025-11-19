@@ -1,10 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Funcionario
 from .forms import FuncionarioModelForm
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import Q
+from django.db.models import Q, RestrictedError
+from django.contrib import messages
+
 
 class FuncionarioListView(LoginRequiredMixin,ListView):
     model = Funcionario
@@ -52,3 +55,20 @@ class FuncionarioDeleteView(LoginRequiredMixin,DeleteView):
     success_url = reverse_lazy('funcionarios')
     permission_required = 'funcionarios.deletar_funcionario'
     permission_denied_message = 'Você não tem permissão para deletar funcionários.'
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        try:
+            self.object.delete()
+
+            messages.success(request, f"Funcionário '{self.object.nome}' excluído com sucesso.")
+            return redirect(self.success_url)
+
+        except RestrictedError:
+            messages.error(
+                request,
+                f"Não foi possível excluir o funcionário '{self.object.nome}'. Existem registros (como estacionamentos ou vendas) vinculados a ele. Remova ou edite esses registros primeiro."
+            )
+
+            return redirect(self.success_url)

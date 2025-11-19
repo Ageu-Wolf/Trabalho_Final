@@ -5,12 +5,9 @@ class EstacionamentoEntradaForm(forms.ModelForm):
 
     class Meta:
         model = Estacionamento
-        # Campos que estarão visíveis no formulário
         fields = ['carro', 'funcionario', 'cliente', 'periodo_estimado', 'relatorio']
 
-        # Personalização do Visual (Widgets)
         widgets = {
-            # 1. Campo Relatório: Definido como uma caixa de texto maior (3 linhas)
             'relatorio': forms.Textarea(attrs={'rows': 3, 'class': 'form-control rounded-pill'})}
 
 class PagamentoForm(forms.Form):
