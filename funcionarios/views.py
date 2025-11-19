@@ -1,14 +1,20 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Funcionario
 from .forms import FuncionarioModelForm
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import Q
+from django.db.models import Q, RestrictedError
+from django.contrib import messages
 
-class FuncionarioListView(ListView):
+
+class FuncionarioListView(LoginRequiredMixin,ListView):
     model = Funcionario
     template_name = 'funcionarios.html'
     context_object_name = 'funcionarios'
+    permission_required = 'funcionarios.visualizar_funcionario'
+    permission_denied_message = 'Você não tem permissão para visualizar a lista de funcionários.'
     paginate_by = 10
 
     def get_queryset(self):
@@ -22,25 +28,47 @@ class FuncionarioListView(ListView):
             )
         return queryset
 
-class FuncionarioCreateView(SuccessMessageMixin, CreateView):
+class FuncionarioCreateView(LoginRequiredMixin,SuccessMessageMixin, CreateView):
     model = Funcionario
     form_class = FuncionarioModelForm
     template_name = 'funcionario_form.html'
     success_url = reverse_lazy('funcionarios')
     success_message = "Funcionário '%(nome)s' cadastrado com sucesso!"
+    permission_required = 'funcionarios.cadastrar_funcionario'
+    permission_denied_message = 'Você não tem permissão para cadastrar novos funcionários.'
 
-class FuncionarioUpdateView(SuccessMessageMixin, UpdateView):
+class FuncionarioUpdateView(LoginRequiredMixin,SuccessMessageMixin, UpdateView):
     model = Funcionario
     form_class = FuncionarioModelForm
     template_name = 'funcionario_form.html'
     success_url = reverse_lazy('funcionarios')
     success_message = "Funcionário '%(nome)s' editado com sucesso!"
+    permission_required = 'funcionarios.editar_funcionario'
+    permission_denied_message = 'Você não tem permissão para editar funcionários.'
 
 
 
 
-
-class FuncionarioDeleteView(DeleteView):
+class FuncionarioDeleteView(LoginRequiredMixin,DeleteView):
     model = Funcionario
     template_name = 'funcionario_deletar.html'
     success_url = reverse_lazy('funcionarios')
+    permission_required = 'funcionarios.deletar_funcionario'
+    permission_denied_message = 'Você não tem permissão para deletar funcionários.'
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        try:
+            self.object.delete()
+
+            messages.success(request, f"Funcionário '{self.object.nome}' excluído com sucesso.")
+            return redirect(self.success_url)
+
+        except RestrictedError:
+            messages.error(
+                request,
+                f"Não foi possível excluir o funcionário '{self.object.nome}'. Existem registros (como estacionamentos ou vendas) vinculados a ele. Remova ou edite esses registros primeiro."
+            )
+
+            return redirect(self.success_url)

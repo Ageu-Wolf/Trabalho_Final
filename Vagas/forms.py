@@ -8,13 +8,7 @@ class EstacionamentoEntradaForm(forms.ModelForm):
         fields = ['carro', 'funcionario', 'cliente', 'periodo_estimado', 'relatorio']
 
         widgets = {
-            'relatorio': forms.Textarea(attrs={'rows': 3}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.widget.attrs['class'] = 'form-control rounded-pill'
+            'relatorio': forms.Textarea(attrs={'rows': 3, 'class': 'form-control rounded-pill'})}
 
 class PagamentoForm(forms.Form):
     METODOS_PAGAMENTO = [

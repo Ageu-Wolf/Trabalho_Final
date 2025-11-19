@@ -35,7 +35,13 @@
                         <td>
                             <strong>{{ registro.vaga.numero }}</strong>
                             {% if registro.cliente %}
+                                {% if registro.periodo_estimado == 'HORA' %}
+                                <span class="badge bg-info ms-2">Cliente</span>
+                                {% elif registro.periodo_estimado == 'MENSAL' %}
                                 <span class="badge bg-info ms-2">Mensalista</span>
+                                {% else %}
+                                <span class="badge bg-info ms-2">Cliente</span>
+                                {% endif %}
                             {% endif %}
                         </td>
                         <td>{{ registro.carro.placa }}</td>
